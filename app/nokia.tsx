@@ -10,19 +10,29 @@ export default function Nokia3310Simulator() {
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const audioContextRef = useRef<AudioContext | null>(null);
 
-	// Initialize audio context
-	useEffect(() => {
-		if (typeof window !== "undefined") {
+	// Initialize audio context on first interaction
+	const initAudioContext = () => {
+		if (!audioContextRef.current && typeof window !== "undefined") {
 			audioContextRef.current = new AudioContext();
+			// Resume the audio context if it's suspended
+			if (audioContextRef.current.state === "suspended") {
+				audioContextRef.current.resume();
+			}
 		}
-		return () => {
-			audioContextRef.current?.close();
-		};
-	}, []);
+	};
 
 	// Play key press sound
 	const playKeySound = (key: string) => {
+		if (!audioContextRef.current) {
+			initAudioContext();
+		}
+
 		if (!audioContextRef.current) return;
+
+		// Resume audio context if suspended (iOS requirement)
+		if (audioContextRef.current.state === "suspended") {
+			audioContextRef.current.resume();
+		}
 
 		// DTMF frequencies
 		const rowFreqs = [697, 770, 852, 941]; // Row frequencies
@@ -111,6 +121,9 @@ export default function Nokia3310Simulator() {
 
 	// Handle key press with debouncing
 	const handleKeyPress = (key: string) => {
+		// Initialize audio context on first key press
+		initAudioContext();
+
 		// Provide haptic feedback - short vibration for number keys
 		vibrate(20);
 		playKeySound(key);
