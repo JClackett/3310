@@ -2,13 +2,31 @@
 
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 
 export default function Nokia3310Simulator() {
   const [input, setInput] = useState("")
   const [currentKey, setCurrentKey] = useState<string | null>(null)
   const [currentKeyIndex, setCurrentKeyIndex] = useState(0)
   const [isMenuScreen, setIsMenuScreen] = useState(true)
+  const [hapticFeedback, setHapticFeedback] = useState(true)
+  const [vibrationSupported, setVibrationSupported] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Check if vibration is supported
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      setVibrationSupported(true)
+    }
+  }, [])
+
+  // Vibration function
+  const vibrate = (pattern: number | number[]) => {
+    if (vibrationSupported && hapticFeedback) {
+      navigator.vibrate(pattern)
+    }
+  }
 
   // Key mappings similar to Nokia 3310
   const keyMappings: Record<string, string[]> = {
@@ -28,6 +46,9 @@ export default function Nokia3310Simulator() {
 
   // Handle key press
   const handleKeyPress = (key: string) => {
+    // Provide haptic feedback - short vibration for number keys
+    vibrate(20)
+
     if (isMenuScreen) {
       setIsMenuScreen(false)
       return
@@ -75,6 +96,9 @@ export default function Nokia3310Simulator() {
 
   // Handle center button press
   const handleCenterPress = () => {
+    // Provide haptic feedback - medium vibration for navigation buttons
+    vibrate(30)
+
     if (isMenuScreen) {
       setIsMenuScreen(false)
     } else {
@@ -85,6 +109,9 @@ export default function Nokia3310Simulator() {
 
   // Handle backspace (left button)
   const handleBackspace = () => {
+    // Provide haptic feedback - medium vibration for navigation buttons
+    vibrate(30)
+
     if (!isMenuScreen) {
       setInput((prev) => prev.slice(0, -1))
       setCurrentKey(null)
@@ -208,13 +235,24 @@ export default function Nokia3310Simulator() {
         </div>
       </div>
 
+      {/* Haptic Feedback Toggle */}
+      {vibrationSupported && (
+        <div className="flex items-center space-x-2 mt-4">
+          <Switch id="haptic-feedback" checked={hapticFeedback} onCheckedChange={setHapticFeedback} />
+          <Label htmlFor="haptic-feedback">Haptic Feedback</Label>
+        </div>
+      )}
+
       {/* Instructions */}
-      <div className="mt-6 max-w-xs text-center text-sm text-gray-600">
+      <div className="mt-4 max-w-xs text-center text-sm text-gray-600">
         <p>Click the center button to start typing.</p>
         <p>Press the same key multiple times to cycle through letters.</p>
         <p>Press # to toggle case for the last character.</p>
         <p>Press the left button to delete a character.</p>
         <p>Press the center button again to return to the menu.</p>
+        {!vibrationSupported && (
+          <p className="mt-2 text-amber-600">Note: Haptic feedback is not supported on your device or browser.</p>
+        )}
       </div>
     </div>
   )
