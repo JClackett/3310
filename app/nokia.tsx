@@ -184,20 +184,27 @@ export default function Nokia3310Simulator() {
 	// 	}
 	// };
 
+	useEffect(() => {
+		if (!ringtoneRef.current) {
+			ringtoneRef.current = new Audio("/ringtone.mp3");
+		}
+	}, []);
+
 	// Handle center button press
-	const handleCenterPress = () => {
+	const handleCenterPress = async () => {
 		// Provide haptic feedback - medium vibration for navigation buttons
-		vibrate(30);
 
 		// Play ringtone
 		if (!ringtoneRef.current) {
 			ringtoneRef.current = new Audio("/ringtone.mp3");
 		}
-		ringtoneRef.current.play();
+		await ringtoneRef.current.play();
 
 		vibrate([
 			120, 50, 120, 50, 120, 50, 240, 50, 240, 120, 50, 120, 50, 120, 50, 240,
-			50, 240,
+			50, 240, 120, 50, 120, 50, 120, 50, 240, 50, 240, 120, 50, 120, 50, 120,
+			50, 240, 50, 240, 120, 50, 120, 50, 120, 50, 240, 50, 240, 120, 50, 120,
+			50, 120, 50, 240, 50, 240,
 		]);
 	};
 
