@@ -1,5 +1,6 @@
 "use client";
 import "ios-vibrator-pro-max";
+import { enableMainThreadBlocking } from "ios-vibrator-pro-max";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
@@ -9,6 +10,7 @@ export default function Nokia3310Simulator() {
 	const [currentKeyIndex, setCurrentKeyIndex] = useState(0);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const audioContextRef = useRef<AudioContext | null>(null);
+	const ringtoneRef = useRef<HTMLAudioElement | null>(null);
 
 	// Initialize audio context on first interaction
 	const initAudioContext = () => {
@@ -186,6 +188,17 @@ export default function Nokia3310Simulator() {
 	const handleCenterPress = () => {
 		// Provide haptic feedback - medium vibration for navigation buttons
 		vibrate(30);
+
+		// Play ringtone
+		if (!ringtoneRef.current) {
+			ringtoneRef.current = new Audio("/ringtone.mp3");
+		}
+		ringtoneRef.current.play();
+
+		enableMainThreadBlocking(true);
+		vibrate([
+			1000, 100, 1000, 100, 1000, 100, 1000, 100, 1000, 100, 1000, 100, 1000,
+		]);
 	};
 
 	// Handle backspace (left button)
