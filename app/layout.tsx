@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "v0 App",
-	description: "Created with v0",
-	generator: "v0.dev",
+	title: "3310 - j3c7",
+	description: "The best phone ever?",
+	openGraph: {
+		images: [{ url: "/cover.jpg" }],
+	},
 };
 
 export default function RootLayout({
