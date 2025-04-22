@@ -195,9 +195,9 @@ export default function Nokia3310Simulator() {
 		}
 		ringtoneRef.current.play();
 
-		enableMainThreadBlocking(true);
 		vibrate([
-			1000, 100, 1000, 100, 1000, 100, 1000, 100, 1000, 100, 1000, 100, 1000,
+			120, 50, 120, 50, 120, 50, 240, 50, 240, 120, 50, 120, 50, 120, 50, 240,
+			50, 240,
 		]);
 	};
 
