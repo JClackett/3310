@@ -121,8 +121,8 @@ export default function Nokia3310Simulator() {
 	}, []);
 
 	return (
-		<div className="bg-[#EFEFEF] h-dvh w-screen flex flex-col items-center justify-center p-4">
-			<div className="relative w-[400px] h-[800px]">
+		<div className="bg-[#EFEFEF] select-none h-dvh w-screen overflow-hidden flex flex-col items-center pt-10 p-4">
+			<div className="relative w-[400px] h-[580px]">
 				{/* Nokia 3310 Image */}
 				<div className="relative w-full h-full">
 					<Image
@@ -135,7 +135,7 @@ export default function Nokia3310Simulator() {
 
 					{/* Screen Overlay */}
 
-					<div className="absolute shadow-[inset_0_2px_4px_0_rgb(0_0_0_/_0.55)] rounded-t-sm rounded-b-md top-[290px] left-[130px] w-[141px] h-[100px] bg-[#94C7A1] flex flex-col items-center justify-center px-2 font-mono text-black text-sm">
+					<div className="absolute shadow-[inset_0_2px_4px_0_rgb(0_0_0_/_0.55)] rounded-t-sm rounded-b-md top-[185px] left-[130px] w-[141px] h-[100px] bg-[#94C7A1] flex flex-col items-center justify-center px-2 font-mono text-black text-sm">
 						<div className="absolute inset-0 grid grid-cols-[repeat(47,1fr)] grid-rows-[repeat(33,1fr)] pointer-events-none">
 							{[...Array(47 * 33)].map((_, i) => (
 								<div
@@ -161,7 +161,7 @@ export default function Nokia3310Simulator() {
 					</div>
 
 					{/* Navigation Buttons */}
-					<div className="absolute top-[410px]">
+					<div className="absolute top-[300px]">
 						<button
 							type="button"
 							onClick={handleCenterPress}
@@ -241,19 +241,19 @@ export default function Nokia3310Simulator() {
 						<button
 							type="button"
 							onClick={() => handleKeyPress("*")}
-							className="absolute top-[168px] left-[128px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							className="absolute top-[165px] left-[128px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
 							aria-label="Button *"
 						/>
 						<button
 							type="button"
 							onClick={() => handleKeyPress("0")}
-							className="absolute top-[175px] left-[182px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							className="absolute top-[172px] left-[182px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
 							aria-label="Button 0"
 						/>
 						<button
 							type="button"
 							onClick={() => handleKeyPress("#")}
-							className="absolute top-[168px] left-[238px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							className="absolute top-[165px] left-[238px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
 							aria-label="Button #"
 						/>
 					</div>
