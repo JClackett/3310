@@ -5,7 +5,7 @@ export const metadata: Metadata = {
 	title: "3310 - j3c7",
 	description: "The best phone ever?",
 	openGraph: {
-		images: [{ url: "/cover.jpg" }],
+		images: [{ url: "/cover.jpeg" }],
 	},
 };
 
