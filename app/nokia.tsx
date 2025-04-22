@@ -9,7 +9,6 @@ export default function Nokia3310Simulator() {
 	const [currentKeyIndex, setCurrentKeyIndex] = useState(0);
 	const [isMenuScreen, setIsMenuScreen] = useState(true);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-	const lastKeyPressTime = useRef<number>(0);
 
 	// Vibration function
 	const vibrate = (pattern: number | number[]) => {
@@ -39,14 +38,15 @@ export default function Nokia3310Simulator() {
 		"#": ["#"],
 	};
 
+	const handlePress = (e: React.MouseEvent<HTMLButtonElement>) => {
+		const key = e.currentTarget.getAttribute("data-key");
+		if (key) {
+			handleKeyPress(key);
+		}
+	};
+
 	// Handle key press with debouncing
 	const handleKeyPress = (key: string) => {
-		const now = Date.now();
-		if (now - lastKeyPressTime.current < 100) {
-			return; // Debounce rapid presses
-		}
-		lastKeyPressTime.current = now;
-
 		// Provide haptic feedback - short vibration for number keys
 		vibrate(20);
 
@@ -207,7 +207,7 @@ export default function Nokia3310Simulator() {
 						{/* Number Buttons */}
 						<button
 							type="button"
-							onClick={() => handleKeyPress("1")}
+							onClick={handlePress}
 							onTouchStart={handleTouchStart}
 							data-key="1"
 							className="debug absolute top-[64px] left-[116px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
@@ -215,7 +215,7 @@ export default function Nokia3310Simulator() {
 						/>
 						<button
 							type="button"
-							onClick={() => handleKeyPress("2")}
+							onClick={handlePress}
 							onTouchStart={handleTouchStart}
 							data-key="2"
 							className="debug absolute top-[69px] left-[176px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
@@ -223,7 +223,7 @@ export default function Nokia3310Simulator() {
 						/>
 						<button
 							type="button"
-							onClick={() => handleKeyPress("3")}
+							onClick={handlePress}
 							onTouchStart={handleTouchStart}
 							data-key="3"
 							className="debug absolute top-[64px] left-[236px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
@@ -232,7 +232,7 @@ export default function Nokia3310Simulator() {
 
 						<button
 							type="button"
-							onClick={() => handleKeyPress("4")}
+							onClick={handlePress}
 							onTouchStart={handleTouchStart}
 							data-key="4"
 							className="debug absolute top-[97px] left-[118px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
@@ -240,7 +240,7 @@ export default function Nokia3310Simulator() {
 						/>
 						<button
 							type="button"
-							onClick={() => handleKeyPress("5")}
+							onClick={handlePress}
 							onTouchStart={handleTouchStart}
 							data-key="5"
 							className="debug absolute top-[102px] left-[176px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
@@ -248,7 +248,7 @@ export default function Nokia3310Simulator() {
 						/>
 						<button
 							type="button"
-							onClick={() => handleKeyPress("6")}
+							onClick={handlePress}
 							onTouchStart={handleTouchStart}
 							data-key="6"
 							className="debug absolute top-[97px] left-[236px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
@@ -257,7 +257,7 @@ export default function Nokia3310Simulator() {
 
 						<button
 							type="button"
-							onClick={() => handleKeyPress("7")}
+							onClick={handlePress}
 							onTouchStart={handleTouchStart}
 							data-key="7"
 							className="debug absolute top-[129px] left-[121px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
@@ -265,7 +265,7 @@ export default function Nokia3310Simulator() {
 						/>
 						<button
 							type="button"
-							onClick={() => handleKeyPress("8")}
+							onClick={handlePress}
 							onTouchStart={handleTouchStart}
 							data-key="8"
 							className="debug absolute top-[135px] left-[178px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
@@ -273,7 +273,7 @@ export default function Nokia3310Simulator() {
 						/>
 						<button
 							type="button"
-							onClick={() => handleKeyPress("9")}
+							onClick={handlePress}
 							onTouchStart={handleTouchStart}
 							data-key="9"
 							className="debug absolute top-[131px] left-[236px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
@@ -282,7 +282,7 @@ export default function Nokia3310Simulator() {
 
 						<button
 							type="button"
-							onClick={() => handleKeyPress("*")}
+							onClick={handlePress}
 							onTouchStart={handleTouchStart}
 							data-key="*"
 							className="debug absolute top-[162px] left-[124px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
@@ -290,7 +290,7 @@ export default function Nokia3310Simulator() {
 						/>
 						<button
 							type="button"
-							onClick={() => handleKeyPress("0")}
+							onClick={handlePress}
 							onTouchStart={handleTouchStart}
 							data-key="0"
 							className="debug absolute top-[169px] left-[178px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
@@ -298,7 +298,7 @@ export default function Nokia3310Simulator() {
 						/>
 						<button
 							type="button"
-							onClick={() => handleKeyPress("#")}
+							onClick={handlePress}
 							onTouchStart={handleTouchStart}
 							data-key="#"
 							className="debug absolute top-[162px] left-[234px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
