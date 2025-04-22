@@ -242,7 +242,7 @@ export default function Nokia3310Simulator() {
 
 					{/* Screen Overlay */}
 
-					<div className="absolute shadow-[inset_0_2px_4px_0_rgb(0_0_0_/_0.55)] rounded-t-sm rounded-b-md top-[185px] left-[130px] w-[141px] h-[100px] bg-[#94C7A1] flex flex-col items-center justify-center px-2 font-mono text-black text-sm">
+					<div className="absolute shadow-[inset_0_2px_4px_0_rgb(0_0_0_/_0.55)] rounded-t-sm rounded-b-[12px] top-[185px] left-[130px] w-[141px] h-[93px] bg-[#94C7A1] flex flex-col items-center justify-center px-2 font-mono text-black text-sm">
 						<div className="absolute inset-0 grid grid-cols-[repeat(47,1fr)] grid-rows-[repeat(33,1fr)] pointer-events-none">
 							{[...Array(47 * 33)].map((_, i) => (
 								<div
