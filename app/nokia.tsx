@@ -9,10 +9,16 @@ export default function Nokia3310Simulator() {
 	const [currentKeyIndex, setCurrentKeyIndex] = useState(0);
 	const [isMenuScreen, setIsMenuScreen] = useState(true);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const lastKeyPressTime = useRef<number>(0);
 
 	// Vibration function
 	const vibrate = (pattern: number | number[]) => {
-		if (typeof window !== "undefined") {
+		// Only vibrate if the device supports it and we're not in a rapid-fire situation
+		if (
+			typeof window !== "undefined" &&
+			window.navigator.vibrate &&
+			!timeoutRef.current
+		) {
 			window.navigator.vibrate(pattern);
 		}
 	};
@@ -33,8 +39,14 @@ export default function Nokia3310Simulator() {
 		"#": ["#"],
 	};
 
-	// Handle key press
+	// Handle key press with debouncing
 	const handleKeyPress = (key: string) => {
+		const now = Date.now();
+		if (now - lastKeyPressTime.current < 100) {
+			return; // Debounce rapid presses
+		}
+		lastKeyPressTime.current = now;
+
 		// Provide haptic feedback - short vibration for number keys
 		vibrate(20);
 
@@ -87,6 +99,16 @@ export default function Nokia3310Simulator() {
 		}, 1000);
 	};
 
+	// Handle touch events for better mobile performance
+	const handleTouchStart = (e: React.TouchEvent) => {
+		e.preventDefault(); // Prevent default touch behavior
+		const target = e.target as HTMLElement;
+		const key = target.getAttribute("data-key");
+		if (key) {
+			handleKeyPress(key);
+		}
+	};
+
 	// Handle center button press
 	const handleCenterPress = () => {
 		// Provide haptic feedback - medium vibration for navigation buttons
@@ -121,7 +143,7 @@ export default function Nokia3310Simulator() {
 	}, []);
 
 	return (
-		<div className="bg-[#EFEFEF] select-none h-dvh w-screen overflow-hidden flex flex-col items-center pt-10 p-4">
+		<div className="bg-[#EFEFEF] select-none h-dvh w-screen overflow-hidden flex flex-col items-center pt-10 p-4 touch-none">
 			<div className="relative w-[400px] h-[580px]">
 				{/* Nokia 3310 Image */}
 				<div className="relative w-full h-full">
@@ -129,8 +151,10 @@ export default function Nokia3310Simulator() {
 						src="/nokia-3310.png"
 						alt="Nokia 3310"
 						fill
-						className="object-contain"
+						className="object-contain touch-none"
 						priority
+						loading="eager"
+						sizes="400px"
 					/>
 
 					{/* Screen Overlay */}
@@ -165,18 +189,18 @@ export default function Nokia3310Simulator() {
 						<button
 							type="button"
 							onClick={handleCenterPress}
-							className="absolute left-[170px] w-[60px] h-[30px] rounded-full opacity-0 hover:opacity-20 focus:outline-none"
+							className="debug absolute left-[170px] w-[60px] h-[30px] rounded-full opacity-0 focus:outline-none"
 							aria-label="Center button"
 						/>
 						<button
 							type="button"
 							onClick={handleBackspace}
-							className="absolute top-[14px] left-[132px] w-[30px] h-[30px] opacity-0 hover:opacity-20 focus:outline-none"
+							className="debug absolute top-[14px] left-[132px] w-[30px] h-[30px] opacity-0 focus:outline-none"
 							aria-label="Left button"
 						/>
 						<button
 							type="button"
-							className="absolute left-[220px] top-[20px] w-[50px] -rotate-12 h-[30px] opacity-0 hover:opacity-20 focus:outline-none"
+							className="debug absolute left-[220px] top-[20px] w-[50px] -rotate-12 h-[30px] opacity-0 focus:outline-none"
 							aria-label="Right button"
 						/>
 
@@ -184,76 +208,100 @@ export default function Nokia3310Simulator() {
 						<button
 							type="button"
 							onClick={() => handleKeyPress("1")}
-							className="absolute top-[67px] left-[120px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							onTouchStart={handleTouchStart}
+							data-key="1"
+							className="debug absolute top-[64px] left-[116px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
 							aria-label="Button 1"
 						/>
 						<button
 							type="button"
 							onClick={() => handleKeyPress("2")}
-							className="absolute top-[72px] left-[180px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							onTouchStart={handleTouchStart}
+							data-key="2"
+							className="debug absolute top-[69px] left-[176px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
 							aria-label="Button 2"
 						/>
 						<button
 							type="button"
 							onClick={() => handleKeyPress("3")}
-							className="absolute top-[67px] left-[240px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							onTouchStart={handleTouchStart}
+							data-key="3"
+							className="debug absolute top-[64px] left-[236px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
 							aria-label="Button 3"
 						/>
 
 						<button
 							type="button"
 							onClick={() => handleKeyPress("4")}
-							className="absolute top-[100px] left-[122px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							onTouchStart={handleTouchStart}
+							data-key="4"
+							className="debug absolute top-[97px] left-[118px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
 							aria-label="Button 4"
 						/>
 						<button
 							type="button"
 							onClick={() => handleKeyPress("5")}
-							className="absolute top-[105px] left-[180px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							onTouchStart={handleTouchStart}
+							data-key="5"
+							className="debug absolute top-[102px] left-[176px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
 							aria-label="Button 5"
 						/>
 						<button
 							type="button"
 							onClick={() => handleKeyPress("6")}
-							className="absolute top-[100px] left-[240px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							onTouchStart={handleTouchStart}
+							data-key="6"
+							className="debug absolute top-[97px] left-[236px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
 							aria-label="Button 6"
 						/>
 
 						<button
 							type="button"
 							onClick={() => handleKeyPress("7")}
-							className="absolute top-[132px] left-[125px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							onTouchStart={handleTouchStart}
+							data-key="7"
+							className="debug absolute top-[129px] left-[121px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
 							aria-label="Button 7"
 						/>
 						<button
 							type="button"
 							onClick={() => handleKeyPress("8")}
-							className="absolute top-[140px] left-[182px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							onTouchStart={handleTouchStart}
+							data-key="8"
+							className="debug absolute top-[135px] left-[178px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
 							aria-label="Button 8"
 						/>
 						<button
 							type="button"
 							onClick={() => handleKeyPress("9")}
-							className="absolute top-[134px] left-[240px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							onTouchStart={handleTouchStart}
+							data-key="9"
+							className="debug absolute top-[131px] left-[236px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
 							aria-label="Button 9"
 						/>
 
 						<button
 							type="button"
 							onClick={() => handleKeyPress("*")}
-							className="absolute top-[165px] left-[128px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							onTouchStart={handleTouchStart}
+							data-key="*"
+							className="debug absolute top-[162px] left-[124px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
 							aria-label="Button *"
 						/>
 						<button
 							type="button"
 							onClick={() => handleKeyPress("0")}
-							className="absolute top-[172px] left-[182px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							onTouchStart={handleTouchStart}
+							data-key="0"
+							className="debug absolute top-[169px] left-[178px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
 							aria-label="Button 0"
 						/>
 						<button
 							type="button"
 							onClick={() => handleKeyPress("#")}
-							className="absolute top-[165px] left-[238px] w-[40px] h-[25px] opacity-0 hover:opacity-20 focus:outline-none"
+							onTouchStart={handleTouchStart}
+							data-key="#"
+							className="debug absolute top-[162px] left-[234px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
 							aria-label="Button #"
 						/>
 					</div>

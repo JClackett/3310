@@ -12,6 +12,11 @@ body {
   }
 }
 
+.debug {
+  /* border: 1px solid red !important;
+  opacity: 1 !important; */
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
