@@ -7,17 +7,12 @@ export default function Nokia3310Simulator() {
 	const [input, setInput] = useState("");
 	const [currentKey, setCurrentKey] = useState<string | null>(null);
 	const [currentKeyIndex, setCurrentKeyIndex] = useState(0);
-	const [isMenuScreen, setIsMenuScreen] = useState(true);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 	// Vibration function
 	const vibrate = (pattern: number | number[]) => {
 		// Only vibrate if the device supports it and we're not in a rapid-fire situation
-		if (
-			typeof window !== "undefined" &&
-			window.navigator.vibrate &&
-			!timeoutRef.current
-		) {
+		if (typeof window !== "undefined" && window.navigator.vibrate) {
 			window.navigator.vibrate(pattern);
 		}
 	};
@@ -49,11 +44,6 @@ export default function Nokia3310Simulator() {
 	const handleKeyPress = (key: string) => {
 		// Provide haptic feedback - short vibration for number keys
 		vibrate(20);
-
-		if (isMenuScreen) {
-			setIsMenuScreen(false);
-			return;
-		}
 
 		if (key === "#") {
 			// Toggle uppercase/lowercase for the last character
@@ -99,27 +89,20 @@ export default function Nokia3310Simulator() {
 		}, 1000);
 	};
 
-	// Handle touch events for better mobile performance
-	const handleTouchStart = (e: React.TouchEvent) => {
-		e.preventDefault(); // Prevent default touch behavior
-		const target = e.target as HTMLElement;
-		const key = target.getAttribute("data-key");
-		if (key) {
-			handleKeyPress(key);
-		}
-	};
+	// // Handle touch events for better mobile performance
+	// const handleTouchStart = (e: React.TouchEvent) => {
+	// 	e.preventDefault(); // Prevent default touch behavior
+	// 	const target = e.target as HTMLElement;
+	// 	const key = target.getAttribute("data-key");
+	// 	if (key) {
+	// 		handleKeyPress(key);
+	// 	}
+	// };
 
 	// Handle center button press
 	const handleCenterPress = () => {
 		// Provide haptic feedback - medium vibration for navigation buttons
 		vibrate(30);
-
-		if (isMenuScreen) {
-			setIsMenuScreen(false);
-		} else {
-			setIsMenuScreen(true);
-			setInput("");
-		}
 	};
 
 	// Handle backspace (left button)
@@ -127,10 +110,8 @@ export default function Nokia3310Simulator() {
 		// Provide haptic feedback - medium vibration for navigation buttons
 		vibrate(30);
 
-		if (!isMenuScreen) {
-			setInput((prev) => prev.slice(0, -1));
-			setCurrentKey(null);
-		}
+		setInput((prev) => prev.slice(0, -1));
+		setCurrentKey(null);
 	};
 
 	// Clear timeout on unmount
@@ -168,20 +149,14 @@ export default function Nokia3310Simulator() {
 								/>
 							))}
 						</div>
-						{isMenuScreen ? (
-							<>
-								<div className="text-center font-bold mb-4">NOKIA</div>
-								<div className="text-center">Menu</div>
-							</>
-						) : (
-							<div className="w-full h-full p-1 overflow-hidden">
-								<div className="text-xs mb-1">New message</div>
-								<div className="text-sm break-words overflow-hidden">
-									{input || <span className="animate-pulse">_</span>}
-									{currentKey && <span className="animate-pulse">|</span>}
-								</div>
+
+						<div className="w-full h-full p-1 overflow-hidden">
+							<div className="text-xs mb-1">New message</div>
+							<div className="text-sm break-words overflow-hidden">
+								{input || <span className="animate-pulse">_</span>}
+								{currentKey && <span className="animate-pulse">|</span>}
 							</div>
-						)}
+						</div>
 					</div>
 
 					{/* Navigation Buttons */}
