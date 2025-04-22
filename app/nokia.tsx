@@ -8,6 +8,75 @@ export default function Nokia3310Simulator() {
 	const [currentKey, setCurrentKey] = useState<string | null>(null);
 	const [currentKeyIndex, setCurrentKeyIndex] = useState(0);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const audioContextRef = useRef<AudioContext | null>(null);
+
+	// Initialize audio context
+	useEffect(() => {
+		if (typeof window !== "undefined") {
+			audioContextRef.current = new AudioContext();
+		}
+		return () => {
+			audioContextRef.current?.close();
+		};
+	}, []);
+
+	// Play key press sound
+	const playKeySound = (key: string) => {
+		if (!audioContextRef.current) return;
+
+		// DTMF frequencies
+		const rowFreqs = [697, 770, 852, 941]; // Row frequencies
+		const colFreqs = [1209, 1336, 1477, 1633]; // Column frequencies
+
+		// Create two oscillators for dual-tone
+		const osc1 = audioContextRef.current.createOscillator();
+		const osc2 = audioContextRef.current.createOscillator();
+		const gainNode = audioContextRef.current.createGain();
+
+		// Map keys to row and column indices
+		const keyMap: Record<string, [number, number]> = {
+			"1": [0, 0],
+			"2": [0, 1],
+			"3": [0, 2],
+			"4": [1, 0],
+			"5": [1, 1],
+			"6": [1, 2],
+			"7": [2, 0],
+			"8": [2, 1],
+			"9": [2, 2],
+			"*": [3, 0],
+			"0": [3, 1],
+			"#": [3, 2],
+		};
+
+		const [row, col] = keyMap[key] || [0, 0];
+
+		osc1.type = "triangle";
+		osc2.type = "triangle";
+		osc1.frequency.setValueAtTime(
+			rowFreqs[row],
+			audioContextRef.current.currentTime,
+		);
+		osc2.frequency.setValueAtTime(
+			colFreqs[col],
+			audioContextRef.current.currentTime,
+		);
+
+		gainNode.gain.setValueAtTime(0.1, audioContextRef.current.currentTime);
+		gainNode.gain.exponentialRampToValueAtTime(
+			0.05,
+			audioContextRef.current.currentTime + 0.1,
+		);
+
+		osc1.connect(gainNode);
+		osc2.connect(gainNode);
+		gainNode.connect(audioContextRef.current.destination);
+
+		osc1.start();
+		osc2.start();
+		osc1.stop(audioContextRef.current.currentTime + 0.2);
+		osc2.stop(audioContextRef.current.currentTime + 0.2);
+	};
 
 	// Vibration function
 	const vibrate = (pattern: number | number[]) => {
@@ -44,6 +113,7 @@ export default function Nokia3310Simulator() {
 	const handleKeyPress = (key: string) => {
 		// Provide haptic feedback - short vibration for number keys
 		vibrate(20);
+		playKeySound(key);
 
 		if (key === "#") {
 			// Toggle uppercase/lowercase for the last character
