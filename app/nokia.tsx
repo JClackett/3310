@@ -86,7 +86,7 @@ export default function Nokia3310Simulator() {
 		// Set timeout to finalize character after 1 second of inactivity
 		timeoutRef.current = setTimeout(() => {
 			setCurrentKey(null);
-		}, 1000);
+		}, 600);
 	};
 
 	// // Handle touch events for better mobile performance
