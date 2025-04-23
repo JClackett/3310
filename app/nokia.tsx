@@ -7,9 +7,7 @@ import { Pencil } from "@/components/icons/pencil";
 
 export default function Nokia3310Simulator() {
 	const [isReady, setIsReady] = useState(false);
-	const [input, setInput] = useState(
-		"Hello whats up, how are you doing? my name is jake and im a cool guy",
-	);
+	const [input, setInput] = useState("");
 	const [currentKey, setCurrentKey] = useState<string | null>(null);
 	const [currentKeyIndex, setCurrentKeyIndex] = useState(0);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
