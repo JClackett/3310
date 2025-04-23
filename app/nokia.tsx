@@ -128,7 +128,7 @@ export default function Nokia3310Simulator() {
 		initAudioContext();
 
 		// Provide haptic feedback - short vibration for number keys
-		vibrate(20);
+		vibrate(200);
 		playKeySound(key);
 
 		if (key === "#") {
@@ -227,7 +227,7 @@ export default function Nokia3310Simulator() {
 	}, []);
 
 	return (
-		<div className="z-[0] bg-[#EFEFEF] select-none h-dvh w-screen overflow-hidden flex flex-col items-center pt-10 p-4 touch-none">
+		<div className="z-0 bg-[#EFEFEF] select-none h-dvh w-screen overflow-hidden flex flex-col items-center pt-10 p-4 touch-none">
 			<div
 				className={cn(
 					"relative w-[400px] h-[580px] transition-opacity duration-300",
@@ -241,7 +241,7 @@ export default function Nokia3310Simulator() {
 						alt="Nokia 3310"
 						fill
 						onLoad={() => setIsReady(true)}
-						className="z-[6] object-contain touch-none"
+						className="z-6 object-contain touch-none"
 						priority
 						loading="eager"
 						sizes="400px"
@@ -249,22 +249,31 @@ export default function Nokia3310Simulator() {
 
 					{/* Screen Overlay */}
 
-					<div className="absolute z-[5] shadow-[inset_0px_2px_5px_4px_rgb(0_0_0_/_0.5)] rounded-t-sm rounded-b-[12px] top-[180px] left-[130px] w-[141px] h-[102px] bg-[#94C7A1] flex flex-col items-center justify-center p-2 overflow-scroll font-mono text-black text-sm">
+					<div className="absolute z-5 shadow-[inset_0px_2px_5px_5px_rgb(0_0_0_/_0.5)] rounded-t-sm rounded-b-[12px] top-[180px] left-[130px] w-[141px] h-[102px] bg-[#72af61] flex flex-col items-center justify-center p-2 overflow-scroll font-mono text-black text-sm">
 						<div className="absolute inset-0 grid grid-cols-[repeat(47,1fr)] grid-rows-[repeat(33,1fr)] pointer-events-none">
 							{[...Array(47 * 33)].map((_, i) => (
 								<div
 									key={`pixel-${Math.floor(i / 47)}-${i % 47}`}
-									className="border-[0.1px] border-gray-500/5"
+									className="border-[0.1px] border-gray-500/10"
 								/>
 							))}
 						</div>
 
-						<div className="w-full h-full font-mono p-0.5 overflow-hidden">
-							<div className="text-[10px] mb-0">New message</div>
-							<div className="text-xs break-words overflow-hidden">
-								{input || <span className="animate-pulse">_</span>}
-								{currentKey && <span className="animate-pulse">|</span>}
+						<div className="w-full h-full font-mono p-0.5 space-y-0.5 overflow-hidden">
+							<div className="flex items-start justify-between">
+								<p className="text-[9px] opacity-70 text-shadow-2xs">Abc</p>
+								<p className="text-[9px] opacity-70 text-shadow-2xs">
+									{459 - input.length}/1
+								</p>
 							</div>
+							<p className="text-xs opacity-70 text-shadow-2xs overflow-hidden">
+								{input || <span className="animate-pulse">_</span>}
+								{currentKey ? (
+									<span className="animate-pulse">|</span>
+								) : (
+									<span className="opacity-0">|</span>
+								)}
+							</p>
 						</div>
 					</div>
 
@@ -273,18 +282,18 @@ export default function Nokia3310Simulator() {
 						<button
 							type="button"
 							onClick={handleCenterPress}
-							className="debug absolute left-[170px] w-[60px] h-[30px] rounded-full opacity-0 focus:outline-none"
+							className="debug absolute left-[170px] w-[60px] h-[30px] rounded-full opacity-0 focus:outline-hidden"
 							aria-label="Center button"
 						/>
 						<button
 							type="button"
 							onClick={handleBackspace}
-							className="debug absolute top-[14px] left-[132px] w-[30px] h-[30px] opacity-0 focus:outline-none"
+							className="debug absolute top-[14px] left-[132px] w-[30px] h-[30px] opacity-0 focus:outline-hidden"
 							aria-label="Left button"
 						/>
 						<button
 							type="button"
-							className="debug absolute left-[220px] top-[20px] w-[50px] -rotate-12 h-[30px] opacity-0 focus:outline-none"
+							className="debug absolute left-[220px] top-[20px] w-[50px] -rotate-12 h-[30px] opacity-0 focus:outline-hidden"
 							aria-label="Right button"
 						/>
 
@@ -293,21 +302,21 @@ export default function Nokia3310Simulator() {
 							type="button"
 							onClick={handlePress}
 							data-key="1"
-							className="debug absolute top-[64px] left-[116px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
+							className="debug absolute top-[64px] left-[116px] w-[49px] h-[25px] opacity-0 focus:outline-hidden touch-manipulation"
 							aria-label="Button 1"
 						/>
 						<button
 							type="button"
 							onClick={handlePress}
 							data-key="2"
-							className="debug absolute top-[69px] left-[176px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
+							className="debug absolute top-[69px] left-[176px] w-[49px] h-[25px] opacity-0 focus:outline-hidden touch-manipulation"
 							aria-label="Button 2"
 						/>
 						<button
 							type="button"
 							onClick={handlePress}
 							data-key="3"
-							className="debug absolute top-[64px] left-[236px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
+							className="debug absolute top-[64px] left-[236px] w-[49px] h-[25px] opacity-0 focus:outline-hidden touch-manipulation"
 							aria-label="Button 3"
 						/>
 
@@ -315,21 +324,21 @@ export default function Nokia3310Simulator() {
 							type="button"
 							onClick={handlePress}
 							data-key="4"
-							className="debug absolute top-[97px] left-[118px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
+							className="debug absolute top-[97px] left-[118px] w-[49px] h-[25px] opacity-0 focus:outline-hidden touch-manipulation"
 							aria-label="Button 4"
 						/>
 						<button
 							type="button"
 							onClick={handlePress}
 							data-key="5"
-							className="debug absolute top-[102px] left-[176px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
+							className="debug absolute top-[102px] left-[176px] w-[49px] h-[25px] opacity-0 focus:outline-hidden touch-manipulation"
 							aria-label="Button 5"
 						/>
 						<button
 							type="button"
 							onClick={handlePress}
 							data-key="6"
-							className="debug absolute top-[97px] left-[236px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
+							className="debug absolute top-[97px] left-[236px] w-[49px] h-[25px] opacity-0 focus:outline-hidden touch-manipulation"
 							aria-label="Button 6"
 						/>
 
@@ -337,21 +346,21 @@ export default function Nokia3310Simulator() {
 							type="button"
 							onClick={handlePress}
 							data-key="7"
-							className="debug absolute top-[129px] left-[121px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
+							className="debug absolute top-[129px] left-[121px] w-[49px] h-[25px] opacity-0 focus:outline-hidden touch-manipulation"
 							aria-label="Button 7"
 						/>
 						<button
 							type="button"
 							onClick={handlePress}
 							data-key="8"
-							className="debug absolute top-[135px] left-[178px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
+							className="debug absolute top-[135px] left-[178px] w-[49px] h-[25px] opacity-0 focus:outline-hidden touch-manipulation"
 							aria-label="Button 8"
 						/>
 						<button
 							type="button"
 							onClick={handlePress}
 							data-key="9"
-							className="debug absolute top-[131px] left-[236px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
+							className="debug absolute top-[131px] left-[236px] w-[49px] h-[25px] opacity-0 focus:outline-hidden touch-manipulation"
 							aria-label="Button 9"
 						/>
 
@@ -359,21 +368,21 @@ export default function Nokia3310Simulator() {
 							type="button"
 							onClick={handlePress}
 							data-key="*"
-							className="debug absolute top-[162px] left-[124px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
+							className="debug absolute top-[162px] left-[124px] w-[49px] h-[25px] opacity-0 focus:outline-hidden touch-manipulation"
 							aria-label="Button *"
 						/>
 						<button
 							type="button"
 							onClick={handlePress}
 							data-key="0"
-							className="debug absolute top-[169px] left-[178px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
+							className="debug absolute top-[169px] left-[178px] w-[49px] h-[25px] opacity-0 focus:outline-hidden touch-manipulation"
 							aria-label="Button 0"
 						/>
 						<button
 							type="button"
 							onClick={handlePress}
 							data-key="#"
-							className="debug absolute top-[162px] left-[234px] w-[49px] h-[25px] opacity-0 focus:outline-none touch-manipulation"
+							className="debug absolute top-[162px] left-[234px] w-[49px] h-[25px] opacity-0 focus:outline-hidden touch-manipulation"
 							aria-label="Button #"
 						/>
 					</div>
