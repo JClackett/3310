@@ -226,15 +226,15 @@ export default function Nokia3310Simulator() {
 	}, []);
 
 	return (
-		<div className="bg-[#EFEFEF] select-none h-dvh w-screen overflow-hidden flex flex-col items-center pt-10 p-4 touch-none">
+		<div className="z-[0] bg-[#EFEFEF] select-none h-dvh w-screen overflow-hidden flex flex-col items-center pt-10 p-4 touch-none">
 			<div className="relative w-[400px] h-[580px]">
 				{/* Nokia 3310 Image */}
 				<div className="relative w-full h-full">
 					<Image
-						src="/nokia-3310.png"
+						src="/nokia-3310-bg.png"
 						alt="Nokia 3310"
 						fill
-						className="object-contain touch-none"
+						className="z-[6] object-contain touch-none"
 						priority
 						loading="eager"
 						sizes="400px"
@@ -242,19 +242,19 @@ export default function Nokia3310Simulator() {
 
 					{/* Screen Overlay */}
 
-					<div className="absolute shadow-[inset_0_2px_4px_0_rgb(0_0_0_/_0.55)] rounded-t-sm rounded-b-[12px] top-[185px] left-[130px] w-[141px] h-[93px] bg-[#94C7A1] flex flex-col items-center justify-center px-2 font-mono text-black text-sm">
+					<div className="absolute z-[5] shadow-[inset_0px_2px_5px_4px_rgb(0_0_0_/_0.5)] rounded-t-sm rounded-b-[12px] top-[180px] left-[130px] w-[141px] h-[102px] bg-[#94C7A1] flex flex-col items-center justify-center p-2 overflow-scroll font-mono text-black text-sm">
 						<div className="absolute inset-0 grid grid-cols-[repeat(47,1fr)] grid-rows-[repeat(33,1fr)] pointer-events-none">
 							{[...Array(47 * 33)].map((_, i) => (
 								<div
 									key={`pixel-${Math.floor(i / 47)}-${i % 47}`}
-									className="border-[0.2px] border-black/5"
+									className="border-[0.1px] border-gray-500/5"
 								/>
 							))}
 						</div>
 
-						<div className="w-full h-full p-1 overflow-hidden">
-							<div className="text-xs mb-1">New message</div>
-							<div className="text-sm break-words overflow-hidden">
+						<div className="w-full h-full font-mono p-0.5 overflow-hidden">
+							<div className="text-[10px] mb-0">New message</div>
+							<div className="text-xs break-words overflow-hidden">
 								{input || <span className="animate-pulse">_</span>}
 								{currentKey && <span className="animate-pulse">|</span>}
 							</div>
@@ -262,7 +262,7 @@ export default function Nokia3310Simulator() {
 					</div>
 
 					{/* Navigation Buttons */}
-					<div className="absolute top-[300px]">
+					<div className="z-10 absolute top-[300px]">
 						<button
 							type="button"
 							onClick={handleCenterPress}
