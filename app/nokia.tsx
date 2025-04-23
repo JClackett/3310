@@ -129,7 +129,7 @@ export default function Nokia3310Simulator() {
 		initAudioContext();
 
 		// Provide haptic feedback - short vibration for number keys
-		vibrate(200);
+		vibrate(30);
 		playKeySound(key);
 
 		if (key === "#") {
