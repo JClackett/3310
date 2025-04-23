@@ -209,9 +209,9 @@ export default function Nokia3310Simulator() {
 				{/* Screen Overlay */}
 				<div
 					style={{
-						left: 49,
+						left: 48,
 						top: 166,
-						width: 180,
+						width: 182,
 						height: 130,
 					}}
 					className="absolute z-5 shadow-[inset_0px_4px_10px_1px_rgb(0_0_0_/_0.8)] rounded-t-sm rounded-b-[12px] bg-gradient-to-br from-[#55684E] to-[#55684E]/70 flex flex-col items-center justify-center p-3 pb-2 overflow-scroll text-black text-sm"
