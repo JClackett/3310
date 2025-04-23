@@ -1,6 +1,6 @@
 "use client";
 import "ios-vibrator-pro-max";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Pencil } from "@/components/icons/pencil";
@@ -15,7 +15,7 @@ export default function Nokia3310Simulator() {
 	const ringtoneRef = useRef<HTMLAudioElement | null>(null);
 
 	// Initialize audio context on first interaction
-	const initAudioContext = () => {
+	const initAudioContext = useCallback(() => {
 		if (!audioContextRef.current && typeof window !== "undefined") {
 			audioContextRef.current = new AudioContext();
 			// Resume the audio context if it's suspended
@@ -23,14 +23,11 @@ export default function Nokia3310Simulator() {
 				audioContextRef.current.resume();
 			}
 		}
-	};
+	}, []);
 
 	// Play key press sound
-	const playKeySound = (key: string) => {
-		if (!audioContextRef.current) {
-			initAudioContext();
-		}
-
+	const playKeySound = () => {
+		if (!audioContextRef.current) initAudioContext();
 		if (!audioContextRef.current) return;
 
 		// Resume audio context if suspended (iOS requirement)
@@ -38,58 +35,23 @@ export default function Nokia3310Simulator() {
 			audioContextRef.current.resume();
 		}
 
-		// DTMF frequencies
-		const rowFreqs = [697, 770, 852, 941]; // Row frequencies
-		const colFreqs = [1209, 1336, 1477, 1633]; // Column frequencies
-
 		// Create two oscillators for dual-tone
-		const osc1 = audioContextRef.current.createOscillator();
-		const osc2 = audioContextRef.current.createOscillator();
+		const osc = audioContextRef.current.createOscillator();
 		const gainNode = audioContextRef.current.createGain();
 
-		// Map keys to row and column indices
-		const keyMap: Record<string, [number, number]> = {
-			"1": [0, 0],
-			"2": [0, 1],
-			"3": [0, 2],
-			"4": [1, 0],
-			"5": [1, 1],
-			"6": [1, 2],
-			"7": [2, 0],
-			"8": [2, 1],
-			"9": [2, 2],
-			"*": [3, 0],
-			"0": [3, 1],
-			"#": [3, 2],
-		};
-
-		const [row, col] = keyMap[key] || [0, 0];
-
-		osc1.type = "triangle";
-		osc2.type = "triangle";
-		osc1.frequency.setValueAtTime(
-			rowFreqs[row],
-			audioContextRef.current.currentTime,
-		);
-		osc2.frequency.setValueAtTime(
-			colFreqs[col],
-			audioContextRef.current.currentTime,
-		);
+		// Main tone
+		osc.type = "sine";
+		osc.frequency.setValueAtTime(900, audioContextRef.current.currentTime);
 
 		gainNode.gain.setValueAtTime(0.1, audioContextRef.current.currentTime);
 		gainNode.gain.exponentialRampToValueAtTime(
-			0.05,
+			0.01,
 			audioContextRef.current.currentTime + 0.1,
 		);
-
-		osc1.connect(gainNode);
-		osc2.connect(gainNode);
+		osc.connect(gainNode);
 		gainNode.connect(audioContextRef.current.destination);
-
-		osc1.start();
-		osc2.start();
-		osc1.stop(audioContextRef.current.currentTime + 0.2);
-		osc2.stop(audioContextRef.current.currentTime + 0.2);
+		osc.start();
+		osc.stop(audioContextRef.current.currentTime + 0.1);
 	};
 
 	// Vibration function
@@ -127,10 +89,10 @@ export default function Nokia3310Simulator() {
 	const handleKeyPress = (key: string) => {
 		// Initialize audio context on first key press
 		initAudioContext();
+		playKeySound();
 
 		// Provide haptic feedback - short vibration for number keys
 		vibrate(30);
-		playKeySound(key);
 
 		if (key === "#") {
 			// Toggle uppercase/lowercase for the last character
@@ -187,10 +149,11 @@ export default function Nokia3310Simulator() {
 	// };
 
 	useEffect(() => {
+		initAudioContext();
 		if (!ringtoneRef.current) {
 			ringtoneRef.current = new Audio("/ringtone.mp3");
 		}
-	}, []);
+	}, [initAudioContext]);
 
 	// Handle center button press
 	const handleCenterPress = async () => {
@@ -271,7 +234,7 @@ export default function Nokia3310Simulator() {
 										{459 - input.length}/1
 									</p>
 								</div>
-								<p className="text-xs opacity-70 text-shadow-2xs overflow-hidden">
+								<p className="text-xs break-words opacity-70 text-shadow-2xs overflow-hidden">
 									{input || (
 										<span className="animate-pulse !duration-75">|</span>
 									)}
