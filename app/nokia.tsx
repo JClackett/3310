@@ -14,6 +14,8 @@ export default function Nokia3310Simulator() {
 	const audioContextRef = useRef<AudioContext | null>(null);
 	const ringtoneRef = useRef<HTMLAudioElement | null>(null);
 
+	const messageRef = useRef<HTMLParagraphElement>(null);
+
 	// Initialize audio context on first interaction
 	const initAudioContext = useCallback(() => {
 		if (!audioContextRef.current && typeof window !== "undefined") {
@@ -24,6 +26,13 @@ export default function Nokia3310Simulator() {
 			}
 		}
 	}, []);
+
+	useEffect(() => {
+		initAudioContext();
+		if (!ringtoneRef.current) {
+			ringtoneRef.current = new Audio("/ringtone.mp3");
+		}
+	}, [initAudioContext]);
 
 	// Play key press sound
 	const playKeySound = () => {
@@ -40,7 +49,7 @@ export default function Nokia3310Simulator() {
 		const gainNode = audioContextRef.current.createGain();
 
 		// Main tone
-		osc.type = "sine";
+		osc.type = "triangle";
 		osc.frequency.setValueAtTime(900, audioContextRef.current.currentTime);
 
 		gainNode.gain.setValueAtTime(0.1, audioContextRef.current.currentTime);
@@ -51,7 +60,7 @@ export default function Nokia3310Simulator() {
 		osc.connect(gainNode);
 		gainNode.connect(audioContextRef.current.destination);
 		osc.start();
-		osc.stop(audioContextRef.current.currentTime + 0.1);
+		osc.stop(audioContextRef.current.currentTime + 0.08);
 	};
 
 	// Vibration function
@@ -90,7 +99,6 @@ export default function Nokia3310Simulator() {
 		// Initialize audio context on first key press
 		initAudioContext();
 		playKeySound();
-
 		// Provide haptic feedback - short vibration for number keys
 		vibrate(30);
 
@@ -132,37 +140,23 @@ export default function Nokia3310Simulator() {
 			setInput((prev) => prev + keyMappings[key][0]);
 		}
 
+		messageRef.current?.scrollTo({
+			top: messageRef.current?.scrollHeight,
+			behavior: "smooth",
+		});
+
 		// Set timeout to finalize character after 1 second of inactivity
 		timeoutRef.current = setTimeout(() => {
 			setCurrentKey(null);
 		}, 600);
 	};
 
-	// // Handle touch events for better mobile performance
-	// const handleTouchStart = (e: React.TouchEvent) => {
-	// 	e.preventDefault(); // Prevent default touch behavior
-	// 	const target = e.target as HTMLElement;
-	// 	const key = target.getAttribute("data-key");
-	// 	if (key) {
-	// 		handleKeyPress(key);
-	// 	}
-	// };
-
-	useEffect(() => {
-		initAudioContext();
-		if (!ringtoneRef.current) {
-			ringtoneRef.current = new Audio("/ringtone.mp3");
-		}
-	}, [initAudioContext]);
-
 	// Handle center button press
 	const handleCenterPress = async () => {
 		// Provide haptic feedback - medium vibration for navigation buttons
-
 		// Play ringtone
-		if (!ringtoneRef.current) {
-			ringtoneRef.current = new Audio("/ringtone.mp3");
-		}
+		if (!ringtoneRef.current) ringtoneRef.current = new Audio("/ringtone.mp3");
+
 		await ringtoneRef.current.play();
 
 		vibrate([
@@ -224,7 +218,7 @@ export default function Nokia3310Simulator() {
 						</div>
 
 						<div className="w-full h-full flex flex-col justify-between font-mono p-0.5 space-y-0.5 overflow-hidden">
-							<div>
+							<div className="space-y-0.5">
 								<div className="flex items-start justify-between">
 									<div className="flex items-center gap-1">
 										<Pencil className="opacity-70 text-shadow-2xs" />
@@ -234,7 +228,10 @@ export default function Nokia3310Simulator() {
 										{459 - input.length}/1
 									</p>
 								</div>
-								<p className="text-xs break-words opacity-70 text-shadow-2xs overflow-hidden">
+								<p
+									ref={messageRef}
+									className="text-[12px] max-h-[49px] break-words opacity-70 text-shadow-2xs overflow-hidden"
+								>
 									{input || (
 										<span className="animate-pulse !duration-75">|</span>
 									)}
