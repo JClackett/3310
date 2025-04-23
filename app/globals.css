@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@source '../*.{js,ts,jsx,tsx,mdx}';
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -107,9 +105,8 @@
 }
 
 @layer utilities {
-	.debug {
-		/* border: 1px solid red !important;
-  opacity: 1 !important; */
+	* {
+		/* background-color: rgba(255, 0, 0, 0.4); */
 	}
 }
 
