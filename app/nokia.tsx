@@ -171,6 +171,7 @@ export default function Nokia3310Simulator() {
 		// Provide haptic feedback - medium vibration for navigation buttons
 		vibrate(30);
 
+		playKeySound();
 		setInput((prev) => prev.slice(0, -1));
 		setCurrentKey(null);
 	};
