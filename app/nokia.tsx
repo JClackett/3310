@@ -3,6 +3,7 @@ import "ios-vibrator-pro-max";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { Pencil } from "@/components/icons/pencil";
 
 export default function Nokia3310Simulator() {
 	const [isReady, setIsReady] = useState(false);
@@ -249,7 +250,7 @@ export default function Nokia3310Simulator() {
 
 					{/* Screen Overlay */}
 
-					<div className="absolute z-5 shadow-[inset_0px_2px_5px_5px_rgb(0_0_0_/_0.5)] rounded-t-sm rounded-b-[12px] top-[180px] left-[130px] w-[141px] h-[102px] bg-[#72af61] flex flex-col items-center justify-center p-2 overflow-scroll font-mono text-black text-sm">
+					<div className="absolute z-5 shadow-[inset_0px_2px_5px_5px_rgb(0_0_0_/_0.5)] rounded-t-sm rounded-b-[12px] top-[180px] left-[130px] w-[141px] h-[103px] bg-[#72af61] flex flex-col items-center justify-center p-2 pb-1 overflow-scroll font-mono text-black text-sm">
 						<div className="absolute inset-0 grid grid-cols-[repeat(47,1fr)] grid-rows-[repeat(33,1fr)] pointer-events-none">
 							{[...Array(47 * 33)].map((_, i) => (
 								<div
@@ -259,20 +260,30 @@ export default function Nokia3310Simulator() {
 							))}
 						</div>
 
-						<div className="w-full h-full font-mono p-0.5 space-y-0.5 overflow-hidden">
-							<div className="flex items-start justify-between">
-								<p className="text-[9px] opacity-70 text-shadow-2xs">Abc</p>
-								<p className="text-[9px] opacity-70 text-shadow-2xs">
-									{459 - input.length}/1
+						<div className="w-full h-full flex flex-col justify-between font-mono p-0.5 space-y-0.5 overflow-hidden">
+							<div>
+								<div className="flex items-start justify-between">
+									<div className="flex items-center gap-1">
+										<Pencil className="opacity-70 text-shadow-2xs" />
+										<p className="text-[9px] opacity-70 text-shadow-2xs">Abc</p>
+									</div>
+									<p className="text-[9px] opacity-70 text-shadow-2xs">
+										{459 - input.length}/1
+									</p>
+								</div>
+								<p className="text-xs opacity-70 text-shadow-2xs overflow-hidden">
+									{input || (
+										<span className="animate-pulse !duration-75">|</span>
+									)}
+									{currentKey ? (
+										<span className="animate-pulse">|</span>
+									) : (
+										<span className="opacity-0">|</span>
+									)}
 								</p>
 							</div>
-							<p className="text-xs opacity-70 text-shadow-2xs overflow-hidden">
-								{input || <span className="animate-pulse">_</span>}
-								{currentKey ? (
-									<span className="animate-pulse">|</span>
-								) : (
-									<span className="opacity-0">|</span>
-								)}
+							<p className="text-[11px] opacity-70 text-shadow-2xs text-center">
+								Options
 							</p>
 						</div>
 					</div>
