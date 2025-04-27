@@ -58,6 +58,8 @@
 	--animate-accordion-down: accordion-down 0.2s ease-out;
 	--animate-accordion-up: accordion-up 0.2s ease-out;
 
+	--animate-pulse-quick: pulse-quick 0.8s ease-in-out infinite;
+
 	@keyframes accordion-down {
 		from {
 			height: 0;
@@ -72,6 +74,12 @@
 		}
 		to {
 			height: 0;
+		}
+	}
+
+	@keyframes pulse-quick {
+		50% {
+			opacity: 0;
 		}
 	}
 }

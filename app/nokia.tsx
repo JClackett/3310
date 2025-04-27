@@ -243,9 +243,9 @@ export default function Nokia3310Simulator() {
 								}}
 								className="text-base/tight break-words opacity-70 text-shadow-2xs overflow-hidden"
 							>
-								{input || <span className="animate-pulse !duration-75">|</span>}
+								{input || <span className="animate-pulse-quick">|</span>}
 								{currentKey ? (
-									<span className="animate-pulse">|</span>
+									<span className="animate-pulse-quick">|</span>
 								) : (
 									<span className="opacity-0">|</span>
 								)}
