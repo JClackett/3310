@@ -10,6 +10,7 @@ export default function Nokia3310Simulator() {
 	const [input, setInput] = useState("");
 	const [currentKey, setCurrentKey] = useState<string | null>(null);
 	const [currentKeyIndex, setCurrentKeyIndex] = useState(0);
+	const [capitalizeMode, setCapitalizeMode] = useState(false);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const audioContextRef = useRef<AudioContext | null>(null);
 	const ringtoneRef = useRef<HTMLAudioElement | null>(null);
@@ -103,17 +104,8 @@ export default function Nokia3310Simulator() {
 		vibrate(30);
 
 		if (key === "#") {
-			// Toggle uppercase/lowercase for the last character
-			if (input.length > 0) {
-				const lastChar = input.slice(-1);
-				const isUpperCase =
-					lastChar === lastChar.toUpperCase() &&
-					lastChar !== lastChar.toLowerCase();
-				const newLastChar = isUpperCase
-					? lastChar.toLowerCase()
-					: lastChar.toUpperCase();
-				setInput(input.slice(0, -1) + newLastChar);
-			}
+			// Toggle capitalize mode
+			setCapitalizeMode(!capitalizeMode);
 			return;
 		}
 
@@ -128,7 +120,11 @@ export default function Nokia3310Simulator() {
 			setCurrentKeyIndex(nextIndex);
 
 			// Update the input by replacing the last character
-			setInput((prev) => prev.slice(0, -1) + keyMappings[key][nextIndex]);
+			const char = keyMappings[key][nextIndex];
+			setInput(
+				(prev) =>
+					prev.slice(0, -1) + (capitalizeMode ? char.toUpperCase() : char),
+			);
 		} else {
 			// Different key pressed, add new character
 			if (currentKey !== null && timeoutRef.current) {
@@ -137,18 +133,19 @@ export default function Nokia3310Simulator() {
 
 			setCurrentKey(key);
 			setCurrentKeyIndex(0);
-			setInput((prev) => prev + keyMappings[key][0]);
+			const char = keyMappings[key][0];
+			setInput((prev) => prev + (capitalizeMode ? char.toUpperCase() : char));
 		}
 
 		messageRef.current?.scrollTo({
 			top: messageRef.current?.scrollHeight,
-			behavior: "smooth",
+			behavior: "instant",
 		});
 
 		// Set timeout to finalize character after 1 second of inactivity
 		timeoutRef.current = setTimeout(() => {
 			setCurrentKey(null);
-		}, 600);
+		}, 800);
 	};
 
 	// Handle center button press
@@ -230,7 +227,9 @@ export default function Nokia3310Simulator() {
 							<div className="flex items-start justify-between">
 								<div className="flex items-center gap-2">
 									<Pencil className="scale-150 opacity-70 text-shadow-2xs" />
-									<p className="text-sm opacity-70 text-shadow-2xs">Abc</p>
+									<p className="text-sm opacity-70 text-shadow-2xs">
+										{capitalizeMode ? "ABC" : "Abc"}
+									</p>
 								</div>
 								<p className="text-sm opacity-70 text-shadow-2xs">
 									{459 - input.length}/1
@@ -243,11 +242,11 @@ export default function Nokia3310Simulator() {
 								}}
 								className="text-base/tight break-words opacity-70 text-shadow-2xs overflow-hidden"
 							>
-								{input || <span className="animate-pulse-quick">|</span>}
+								{input}
 								{currentKey ? (
-									<span className="animate-pulse-quick">|</span>
-								) : (
 									<span className="opacity-0">|</span>
+								) : (
+									<span className="animate-pulse-quick">|</span>
 								)}
 							</p>
 						</div>
