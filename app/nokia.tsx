@@ -11,9 +11,12 @@ export default function Nokia3310Simulator() {
 	const [currentKey, setCurrentKey] = useState<string | null>(null);
 	const [currentKeyIndex, setCurrentKeyIndex] = useState(0);
 	const [capitalizeMode, setCapitalizeMode] = useState(false);
+	const [numbersMode, setNumbersMode] = useState(false);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const audioContextRef = useRef<AudioContext | null>(null);
 	const ringtoneRef = useRef<HTMLAudioElement | null>(null);
+	const hashPressRef = useRef<NodeJS.Timeout | null>(null);
+	const longPressDetectedRef = useRef(false);
 
 	const messageRef = useRef<HTMLParagraphElement>(null);
 
@@ -74,16 +77,16 @@ export default function Nokia3310Simulator() {
 
 	// Key mappings similar to Nokia 3310
 	const keyMappings: Record<string, string[]> = {
-		"1": [".", ",", "?", "!", "1", "-", "@", "_", "+", "(", ")"],
-		"2": ["a", "b", "c", "2"],
-		"3": ["d", "e", "f", "3"],
-		"4": ["g", "h", "i", "4"],
-		"5": ["j", "k", "l", "5"],
-		"6": ["m", "n", "o", "6"],
-		"7": ["p", "q", "r", "s", "7"],
-		"8": ["t", "u", "v", "8"],
-		"9": ["w", "x", "y", "z", "9"],
-		"0": [" ", "0"],
+		"1": [".", ",", "?", "!", "-", "@", "_", "+", "(", ")"],
+		"2": ["a", "b", "c"],
+		"3": ["d", "e", "f"],
+		"4": ["g", "h", "i"],
+		"5": ["j", "k", "l"],
+		"6": ["m", "n", "o"],
+		"7": ["p", "q", "r", "s"],
+		"8": ["t", "u", "v"],
+		"9": ["w", "x", "y", "z"],
+		"0": [" "],
 		"*": ["*", "+", "/", "=", "<", ">", "$", "%", "&", '"', "'"],
 		"#": ["#"],
 	};
@@ -95,6 +98,51 @@ export default function Nokia3310Simulator() {
 		}
 	};
 
+	// Handle # key press start (for long press detection)
+	const handleHashPressStart = () => {
+		initAudioContext();
+		playKeySound();
+		vibrate(30);
+
+		// Reset the long press flag for this press
+		longPressDetectedRef.current = false;
+
+		hashPressRef.current = setTimeout(() => {
+			// Mark that a long press occurred
+			longPressDetectedRef.current = true;
+
+			// Toggle numbers mode and reset capitalize mode if turning numbers off
+			setNumbersMode((prevNumbersMode) => {
+				const nextNumbersMode = !prevNumbersMode;
+				// If we are turning numbers mode OFF, reset capitalize mode
+				if (!nextNumbersMode) {
+					setCapitalizeMode(false);
+				}
+				return nextNumbersMode;
+			});
+
+			vibrate(60); // Provide feedback for long press activation
+			hashPressRef.current = null; // Clear the ref after timeout fires
+		}, 800); // 800ms threshold for long press
+	};
+
+	// Handle # key press end
+	const handleHashPressEnd = () => {
+		// Only process if the timer is still active (meaning it hasn't fired yet)
+		if (hashPressRef.current) {
+			clearTimeout(hashPressRef.current);
+			hashPressRef.current = null;
+
+			// Since the timer was cleared before firing, it's a short press.
+			// longPressDetectedRef will be false here.
+			setCapitalizeMode(!capitalizeMode);
+		}
+		// If hashPressRef.current was null, the timeout already fired (long press)
+		// or this function was called redundantly (e.g., pointerLeave after pointerUp).
+		// In the long press case, numbersMode was already toggled by the timeout.
+		// No need to reset longPressDetectedRef here, it's reset on press start.
+	};
+
 	// Handle key press with debouncing
 	const handleKeyPress = (key: string) => {
 		// Initialize audio context on first key press
@@ -104,8 +152,20 @@ export default function Nokia3310Simulator() {
 		vibrate(30);
 
 		if (key === "#") {
-			// Toggle capitalize mode
-			setCapitalizeMode(!capitalizeMode);
+			// Just return as # is handled by the dedicated handlers
+			return;
+		}
+
+		if (numbersMode) {
+			// In numbers mode, just output the key itself
+			setInput((prev) => prev + key);
+
+			// Scroll to bottom after updating input
+			messageRef.current?.scrollTo({
+				top: messageRef.current?.scrollHeight,
+				behavior: "instant",
+			});
+
 			return;
 		}
 
@@ -179,6 +239,9 @@ export default function Nokia3310Simulator() {
 			if (timeoutRef.current) {
 				clearTimeout(timeoutRef.current);
 			}
+			if (hashPressRef.current) {
+				clearTimeout(hashPressRef.current);
+			}
 		};
 	}, []);
 
@@ -228,7 +291,7 @@ export default function Nokia3310Simulator() {
 								<div className="flex items-center gap-2">
 									<Pencil className="scale-150 opacity-70 text-shadow-2xs" />
 									<p className="text-sm opacity-70 text-shadow-2xs">
-										{capitalizeMode ? "ABC" : "Abc"}
+										{numbersMode ? "123" : capitalizeMode ? "ABC" : "Abc"}
 									</p>
 								</div>
 								<p className="text-sm opacity-70 text-shadow-2xs">
@@ -454,7 +517,9 @@ export default function Nokia3310Simulator() {
 					/>
 					<button
 						type="button"
-						onClick={handlePress}
+						onPointerDown={handleHashPressStart}
+						onPointerUp={handleHashPressEnd}
+						onPointerLeave={handleHashPressEnd}
 						data-key="#"
 						style={{
 							top: 212,
